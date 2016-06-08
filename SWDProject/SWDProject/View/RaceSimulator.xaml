@@ -1,0 +1,94 @@
+﻿<Window x:Class="SWDProject.RaceSimulator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SWDProject"
+        mc:Ignorable="d"
+        DataContext="{Binding Algorithm, Source={StaticResource Locator}}"
+        Title="Formula1 Tyres Strategy Optimization" Height="350" Width="525">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Row="0" Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Row="0" Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Tyre type"></Label>
+                <Grid Grid.Row="0" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <RadioButton Grid.Row="0" Grid.Column="0" GroupName="Group1" Margin="0,10,0,0" 
+             IsChecked="{Binding TyreType}" Content="Soft" />
+                    <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Group1"  Content="Hard"  Margin="0,10,0,0" 
+             IsChecked="{Binding TyreType, Converter={StaticResource BoolConverter}}" />
+                </Grid>
+                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Content="Laps"></Label>
+                <TextBox Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding Laps, Mode=TwoWay}" ></TextBox>
+                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Content="State at the start"></Label>
+                <TextBox Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding TyreStateAtTheBeginning, Mode=TwoWay}"  ></TextBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="The best possible time lap" TextAlignment="Center"  TextWrapping="Wrap"></TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding BestLapTime, Mode=TwoWay}"  ></TextBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="4" Text="Max laps on soft tyres" TextAlignment="Center"  TextWrapping="Wrap"></TextBlock>
+                <TextBox Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding SuggestedLapsForSoftTyres, Mode=TwoWay}"  ></TextBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="5" Text="Max laps on hard tyres" TextAlignment="Center"  TextWrapping="Wrap"></TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding SuggestedLapsForHardTyres, Mode=TwoWay}"  ></TextBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="6" Text="Pitstop time" TextAlignment="Center"  TextWrapping="Wrap"></TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding PitStopTime, Mode=TwoWay}"  ></TextBox>
+            </Grid>
+        </Grid>
+        <Grid Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="10*" />
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Results:" Margin="10,0,0,0"></Label>
+            <DataGrid Margin="10,0,10,5" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeColumns="True" CanUserAddRows="False" CanUserSortColumns="True" ItemsSource="{Binding LapInfos}">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <SolidColorBrush Color="{Binding RowColor}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Lap" Binding="{Binding Lap}" />
+                    <DataGridTextColumn Header="Time" Binding="{Binding LapTime}" />
+                    <DataGridTextColumn Header="Tyre type" Binding="{Binding TyreType}" />
+                    <DataGridTextColumn Header="Tyre state" Binding="{Binding TyreState}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Race time:" Grid.Column="0"></Label>
+                <Label Content="{Binding RaceTime}" Grid.Column="1"></Label>
+                <Button Command="{Binding StartCommand}" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5" Content="Run"></Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
