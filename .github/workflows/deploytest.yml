@@ -16,6 +16,7 @@ jobs:
       with:
        connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
        name: publish.zip
+       path: dadada
        container: zips
     - run: |
           dir
