@@ -18,6 +18,7 @@ jobs:
        name: publish.zip
        container: zips
     - run: |
+          dir
           cd ..
           dir
           cd ..
