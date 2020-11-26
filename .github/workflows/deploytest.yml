@@ -1,0 +1,26 @@
+name: Test deploy on Azure 
+
+on: workflow_dispatch
+
+env:
+  AZURE_WEBAPP_NAME: testwebappxz    # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: '.' 
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: my-artifact
+      uses: fixpoint/azblob-download-artifact@v3
+      with:
+       connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+       name: publish.zip
+       path: zips
+    - name: 'Run Azure webapp deploy action using publish profile credentials'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/publish.zip'
