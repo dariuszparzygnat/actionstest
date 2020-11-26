@@ -18,9 +18,10 @@ jobs:
        connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
        name: publish.zip
        container: zips
+    - run: dir
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
-        package: 'publish.zip'
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/publish.zip'
