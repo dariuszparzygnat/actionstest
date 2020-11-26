@@ -10,7 +10,6 @@ jobs:
   deploy:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
 
     - name: my-artifact
       uses: fixpoint/azblob-download-artifact@v3
