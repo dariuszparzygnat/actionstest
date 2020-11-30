@@ -11,13 +11,10 @@ jobs:
     runs-on: windows-latest
     steps:
 
-    - name: my-artifact
-      uses: fixpoint/azblob-download-artifact@v3
+    - uses: kheiakiyama/install-azcopy-action@v1
       with:
-       connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-       name: publish.zip
-       path: dadada
-       container: zips
+        version: 'v10'
+    - run: azcopy_v10 "https://dptestdeploy.blob.core.windows.net/test/publish.zip" ".\publish.zip"
     - run: |
           dir
           cd ..
