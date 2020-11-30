@@ -3,10 +3,6 @@ name: Test deploy on Azure
 on: 
   workflow_dispatch:
     inputs:
-      container:
-        description: 'Container'     
-        required: true
-        default: ''
       artifactname:
         description: 'Artifact file name with extension'  
         required: true
