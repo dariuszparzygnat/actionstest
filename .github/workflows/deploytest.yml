@@ -3,7 +3,7 @@ name: Test deploy on Azure
 on: workflow_dispatch
 
 env:
-  AZURE_WEBAPP_NAME: testwebappxz    # set this to your application's name
+  AZURE_WEBAPP_NAME: greatapp    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
 
 jobs:
