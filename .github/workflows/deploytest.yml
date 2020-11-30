@@ -10,11 +10,12 @@ jobs:
   deploy:
     runs-on: windows-latest
     steps:
-
-    - uses: kheiakiyama/install-azcopy-action@v1
+    - name: Azure CLI script
+      uses: azure/CLI@v1
       with:
-        version: 'v10'
-    - run: azcopy_v10 "https://dptestdeploy.blob.core.windows.net/test/publish.zip" ".\publish.zip"
+        azcliversion: 2.0.72
+        inlineScript: |
+          az storage blob download -c test -f publish.zip -n publish.zip --account-name dptestdeploy
     - run: |
           dir
           cd ..
