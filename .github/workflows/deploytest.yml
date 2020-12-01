@@ -22,7 +22,7 @@ jobs:
       uses: carlosperate/download-file-action@v1.0.3
       id: download-poetry
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/artifacts/${{ github.event.inputs.buildnumber }}/${{ github.event.inputs.artifactname }}'
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/artifacts/DpTest/DpTest_DeployTest/${{ github.event.inputs.buildnumber }}/${{ github.event.inputs.artifactname }}'
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
