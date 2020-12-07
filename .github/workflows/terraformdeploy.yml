@@ -18,10 +18,10 @@ jobs:
         shell: bash
 
     steps:
-    #- name: Azure Login
-     # uses: azure/login@v1
-      #with:
-       # creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
