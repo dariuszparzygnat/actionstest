@@ -25,13 +25,13 @@ jobs:
 
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
-      id: download deploy file
+      id: download_deploy_file
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/deploy.tf'
         
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
-      id: download var file
+      id: download_var_file
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/variables.tf'
     
