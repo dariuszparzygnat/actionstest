@@ -18,10 +18,10 @@ jobs:
         shell: bash
 
     steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    #- name: Azure Login
+     # uses: azure/login@v1
+      #with:
+       # creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
@@ -34,6 +34,12 @@ jobs:
       id: download_var_file
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/variables.tf'
+    - name: Set credentials
+      run: |
+        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
     
       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
