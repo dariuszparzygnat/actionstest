@@ -34,12 +34,12 @@ jobs:
       id: download_var_file
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/variables.tf'
-    - name: Set credentials
-      run: |
-        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
-        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
-        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
-        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+    #- name: Set credentials
+     # run: |
+      #  export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+       # export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        #export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        #export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
     
       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -51,7 +51,12 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var="buildnumber=${{ github.event.inputs.buildnumber }}"
+      run: |
+        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+        terraform plan -var="buildnumber=${{ github.event.inputs.buildnumber }}"
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
