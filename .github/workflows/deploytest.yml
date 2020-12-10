@@ -2,14 +2,6 @@ name: Test deploy on Azure
 
 on: 
   workflow_dispatch:
-    inputs:
-      artifactname:
-        description: 'Artifact file name with extension'  
-        required: true
-        default": 'artifact.zip'
-      buildnumber:
-        description: 'Build number'
-        required: true
 env:
   AZURE_WEBAPP_NAME: greatapp    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
@@ -18,14 +10,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Download a file
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-poetry
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/artifacts/DpTest/DpTest_DeployTest/${{ github.event.inputs.buildnumber }}/${{ github.event.inputs.artifactname }}'
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/${{ github.event.inputs.artifactname }}'
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Virtual path settings'
+      run: |
+       az resource update --name "wbtest110118/config/web" --resource-group "wbtest110118" --resource-type "Microsoft.Web/sites/config" --set "properties.virtualApplications=[{\"virtualPath\":\"\/\",\"physicalPath\":\"site\\wwwroot\",\"virtualDirectories\":null},{\"virtualPath\":\"\/api\",\"physicalPath\":\"site\\wwwroot\\api\",\"virtualDirectories\":null},{\"virtualPath\":\"\/report\",\"physicalPath\":\"site\\wwwroot\\report\",\"virtualDirectories\":null}]"
