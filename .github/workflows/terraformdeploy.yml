@@ -10,7 +10,7 @@ on:
         description: 'If app insights needed, then true'
         required: false
       withsql:
-        description: 'If app insights needed, then true'
+        description: 'If sql needed, then true'
         required: false
 
 env:
