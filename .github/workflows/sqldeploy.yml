@@ -1,20 +1,134 @@
-name: Test deploy sql on Azure
+name: 'Test deploy sql on azure'
 
-# Controls when the action will run. 
-on: 
+on:
   workflow_dispatch:
+    inputs:
+      buildnumber:
+        description: 'Build number'
+        required: true
+      withsql:
+        description: 'If sql needed, then true'
+        required: false
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: '.' 
 
 jobs:
-  deploy:
-    runs-on: windows-latest
+  create_infrastructure_azure:
+    name: 'Create infrastructure on Azure'
+    runs-on: ubuntu-latest
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
-      id: download-poetry
+      id: download_deploy_file
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/deploy.tf'
+        
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download_var_file
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/variables.tf'
+    
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: |
+        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+        terraform plan -var="buildnumber=${{ github.event.inputs.buildnumber }}"
+
+      # On push to master, build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply      
+      run: |
+        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+        terraform apply -var="buildnumber=${{ github.event.inputs.buildnumber }}" -auto-approve
+  
+  create_ms_sql:
+    if: github.event.inputs.withsql == 'true'
+    name: 'Create sql on Azure'
+    runs-on: ubuntu-latest
+    needs: [create_infrastructure_azure]
+
+    outputs:
+      cs: ${{ steps.getting_cs.outputs.sqlconnectionstr }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download_deploy_file
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/sql/deploy.tf'
+        
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download_var_file
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/trf/sql/variables.tf'
+        
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+
+    - name: Terraform Init
+      run: terraform init
+    
+    - name: Terraform Apply      
+      run: |
+        export ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}
+        export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
+        export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
+        export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
+        terraform apply -var="buildnumber=${{ github.event.inputs.buildnumber }}" -auto-approve
+    - run: |
+       terraform output connectionstring
+    - name: Set connection string
+      id: getting_cs
+      run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
+    - run: |
+        echo ${{steps.getting_cs.outputs.sqlconnectionstr}}
+  
+  restore_db:
+    name: 'Restore db'
+    runs-on: ubuntu-latest
+    needs: [create_ms_sql]
+    
+    defaults:
+      run:
+        shell: bash    
+    steps:
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-dacpac
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
+    - run: |
+       echo ${{needs.create_ms_sql.outputs.cs}}
     - uses: azure/sql-action@v1
       with:
-        server-name: wbschematest
-        connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
+        connection-string: ${{needs.create_ms_sql.outputs.constring}}
         dacpac-package: './db.dacpac'
