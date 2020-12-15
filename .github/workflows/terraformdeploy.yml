@@ -120,7 +120,7 @@ jobs:
     needs: [create_infrastructure_azure]
 
     outputs:
-      constring: ${{ steps.getting_constring.outputs.sqlconnectionstring }}
+      cs: ${{ steps.getting_cs.outputs.sqlconnectionstr }}
     defaults:
       run:
         shell: bash
@@ -153,9 +153,11 @@ jobs:
         export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
         export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
         terraform apply -var="buildnumber=${{ github.event.inputs.buildnumber }}" -auto-approve
+    - run: |
+       terraform output connectionstring
     - name: Set connection string
-      id: getting_constring
-      run: echo "::set-output name=sqlconnectionstring::$(terraform output connectionstring)"  
+      id: getting_cs
+      run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
   
   deploy_app:
     if: github.event.inputs.withdeploy != 'false'
@@ -193,8 +195,7 @@ jobs:
     
     defaults:
       run:
-        shell: bash
-    
+        shell: bash    
     steps:
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
@@ -202,7 +203,7 @@ jobs:
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
     - run: |
-       echo 'x${{needs.create_ms_sql.outputs.constring}}'
+       echo ${{needs.create_ms_sql.outputs.cs}}
     - uses: azure/sql-action@v1
       with:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
@@ -225,7 +226,7 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
    
     - run: |
-       echo 'x${{needs.create_ms_sql.outputs.constring}}'
+       echo ${{needs.create_ms_sql.outputs.cs}}
     - run: |
        echo ${{needs.create_app_insights.outputs.ik}}
        
