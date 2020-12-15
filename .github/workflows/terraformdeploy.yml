@@ -226,6 +226,8 @@ jobs:
    
     - run: |
        echo 'x${{needs.create_ms_sql.outputs.constring}}'
+    - run: |
+       echo ${{needs.create_app_insights.outputs.ik}}
        
     - name: Add ik setting
       run: |
