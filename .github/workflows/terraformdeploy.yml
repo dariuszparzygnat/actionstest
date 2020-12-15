@@ -198,11 +198,11 @@ jobs:
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
     - run: |
-       echo ${{ needs.create_ms_sql.outputs.constring }}
+       echo 'x${{needs.create_ms_sql.outputs.constring}}'
     - uses: azure/sql-action@v1
       with:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
-        connection-string: ${{ needs.create_ms_sql.outputs.constring }}
+        connection-string: "${{needs.create_ms_sql.outputs.constring}}"
         dacpac-package: './db.dacpac'
 
   
