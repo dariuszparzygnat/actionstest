@@ -120,7 +120,7 @@ jobs:
     needs: [create_infrastructure_azure]
 
     outputs:
-      sqlconnectionstring: ${{ steps.getting_constring.outputs.sqlconnectionstring }}
+      constring: ${{ steps.getting_constring.outputs.sqlconnectionstring }}
     defaults:
       run:
         shell: bash
@@ -156,11 +156,9 @@ jobs:
     - name: Set connection string
       id: getting_constring
       run: echo "::set-output name=sqlconnectionstring::$(terraform output connectionstring)"  
-    - run: |
-       terraform output connectionstring
   
   deploy_app:
-    if: github.event.inputs.withdeploy == 'false'
+    if: github.event.inputs.withdeploy != 'false'
     name: 'Deploy on Azure'
     runs-on: ubuntu-latest
     needs: [create_infrastructure_azure]
@@ -200,11 +198,11 @@ jobs:
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
     - run: |
-       printf ${{ needs.create_ms_sql.outputs.sqlconnectionstring }}
+       echo ${{ needs.create_ms_sql.outputs.constring }}
     - uses: azure/sql-action@v1
       with:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
-        connection-string: ${{ needs.create_ms_sql.outputs.sqlconnectionstring }}
+        connection-string: ${{ needs.create_ms_sql.outputs.constring }}
         dacpac-package: './db.dacpac'
 
   
