@@ -159,7 +159,7 @@ jobs:
       id: getting_cs
       run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
     - run: |
-        echo steps.getting_cs.outputs.sqlconnectionstr
+        echo ${{steps.getting_cs.outputs.sqlconnectionstr}}
   
   deploy_app:
     if: github.event.inputs.withdeploy != 'false'
