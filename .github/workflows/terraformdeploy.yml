@@ -158,6 +158,8 @@ jobs:
     - name: Set connection string
       id: getting_cs
       run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
+    - run: |
+        echo steps.getting_cs.outputs.sqlconnectionstr
   
   deploy_app:
     if: github.event.inputs.withdeploy != 'false'
@@ -214,7 +216,7 @@ jobs:
   add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
-    needs: [create_app_insights, create_ms_sql]
+    needs: [create_app_insights, deploy_app]
     
     defaults:
       run:
@@ -223,13 +225,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}
-   
-    - run: |
-       echo ${{needs.create_ms_sql.outputs.cs}}
-    - run: |
-       echo ${{needs.create_app_insights.outputs.ik}}
-       
+       creds: ${{ secrets.AZURE_CREDENTIALS }}   
     - name: Add ik setting
       run: |
        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings APPINSIGHTS_INSTRUMENTATIONKEY=${{needs.create_app_insights.outputs.ik}}
