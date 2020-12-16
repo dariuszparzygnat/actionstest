@@ -203,10 +203,12 @@ jobs:
       id: download-dacpac
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
+    - run: |
+        echo "${{needs.create_ms_sql.outputs.constring}}Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
     - uses: azure/sql-action@v1
       with:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
-        connection-string: '${{needs.create_ms_sql.outputs.constring}}Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;'
+        connection-string: "${{needs.create_ms_sql.outputs.constring}}Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
         dacpac-package: './db.dacpac'
 
   
