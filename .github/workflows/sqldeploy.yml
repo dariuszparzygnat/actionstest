@@ -107,7 +107,7 @@ jobs:
        terraform output connectionstring
     - name: Set connection string
       id: getting_cs
-      run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
+      run: echo ::set-output name=sqlconnectionstr::$(terraform output connectionstring)  
     - run: |
         echo ${{steps.getting_cs.outputs.sqlconnectionstr}}
   
