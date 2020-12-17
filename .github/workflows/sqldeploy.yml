@@ -127,6 +127,6 @@ jobs:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
     - uses: azure/sql-action@v1
       with:
-        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}"
+        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
         connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
         dacpac-package: './db.dacpac'
