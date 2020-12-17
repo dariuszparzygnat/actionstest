@@ -217,7 +217,7 @@ jobs:
   add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
-    needs: [create_app_insights]
+    needs: [create_app_insights, deploy_app]
     
     defaults:
       run:
@@ -234,7 +234,7 @@ jobs:
   add_connection_string:
    name: 'Add connection string to app'
    runs-on: ubuntu-latest
-   needs: [create_ms_sql]
+   needs: [create_ms_sql, deploy_app]
    
    defaults:
      run:
