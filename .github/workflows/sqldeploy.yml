@@ -125,6 +125,10 @@ jobs:
       id: download-dacpac
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
     - uses: azure/sql-action@v1
       with:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
