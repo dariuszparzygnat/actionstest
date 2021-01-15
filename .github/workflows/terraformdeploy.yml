@@ -212,6 +212,30 @@ jobs:
         server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
         connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
         dacpac-package: './db.dacpac'
+        
+        
+  restore_db_data:
+    name: 'Restore db data'
+    runs-on: windows-latest
+    needs: [restore_db]
+    
+    defaults:
+      run:
+        shell: bash    
+    steps:
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-dacpac
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/Updated_Schema_CopyData.zip'
+    - uses: montudor/action-zip@v0.1.1
+      with:
+         args: unzip -qq Updated_Schema_CopyData.zip -d Updated_Schema_CopyData
+    - name: Restore data
+      shell: cmd
+      run: |
+        cd Updated_Schema_CopyData
+        workbook.migration.exe CopyData "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
 
   
   add_instrumentation_key:
