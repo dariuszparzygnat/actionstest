@@ -191,6 +191,7 @@ jobs:
   
   restore_db:
     name: 'Restore db'
+    if: github.event.inputs.withsql == 'oldway'
     runs-on: windows-latest
     needs: [create_ms_sql]
     
@@ -217,7 +218,7 @@ jobs:
   restore_db_data:
     name: 'Restore db data'
     runs-on: windows-latest
-    needs: [restore_db]
+    needs: [create_ms_sql]
     
     defaults:
       run:
@@ -232,6 +233,7 @@ jobs:
       shell: cmd
       run: |
         tar -xf Updated_Schema_CopyData.zip
+        workbook.migration.exe Schema "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
         workbook.migration.exe CopyData "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
 
   
