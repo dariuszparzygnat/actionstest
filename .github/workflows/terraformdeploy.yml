@@ -213,7 +213,7 @@ jobs:
       run: |
         tar -xf jsondatabasetool.zip
         tar -xf db.zip
-        WorkBookJSONDatabaseTool.exe action=create folder=".\" connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;" BurnAndKillObjectIfExist=true
+        WorkBookJSONDatabaseTool.exe action=create folder="./empty/" connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;" BurnAndKillObjectIfExist=true
          
   add_instrumentation_key:
     name: 'Add ik to settings'
