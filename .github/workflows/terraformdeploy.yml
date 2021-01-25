@@ -189,32 +189,6 @@ jobs:
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
   
-  restore_db:
-    name: 'Restore db'
-    if: github.event.inputs.withsql == 'oldway'
-    runs-on: windows-latest
-    needs: [create_ms_sql]
-    
-    defaults:
-      run:
-        shell: bash    
-    steps:
-    - name: Download a file
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-dacpac
-      with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.dacpac'
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - uses: azure/sql-action@v1
-      with:
-        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
-        connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
-        dacpac-package: './db.dacpac'
-        
-        
   restore_db_data:
     name: 'Restore db data'
     runs-on: windows-latest
@@ -224,19 +198,23 @@ jobs:
       run:
         shell: bash    
     steps:
-    - name: Download a file
+    - name: Download a restore tool
       uses: carlosperate/download-file-action@v1.0.3
-      id: download-dacpac
+      id: download-jsondatabasetool
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/Updated_Schema_CopyData.zip'
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/jsondatabasetool.zip'
+    - name: Download a schema
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-schema
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.zip'
     - name: Restore data
       shell: cmd
       run: |
-        tar -xf Updated_Schema_CopyData.zip
-        workbook.migration.exe Schema "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
-        workbook.migration.exe CopyData "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
-
-  
+        tar -xf jsondatabasetool.zip
+        tar -xf db.zip
+        WorkBookJSONDatabaseTool.exe action=create folder=".\" connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;" BurnAndKillObjectIfExist=true
+         
   add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
