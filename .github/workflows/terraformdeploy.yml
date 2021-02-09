@@ -212,22 +212,20 @@ jobs:
       uses: carlosperate/download-file-action@v1.0.3
       id: download-sql
       with:
-	  file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
 	  
     - name: Azure Login
       uses: azure/login@v1
       with:
-	  creds: ${{ secrets.AZURE_CREDENTIALS }} 
+        creds: ${{ secrets.AZURE_CREDENTIALS }} 
     - name: Run missing sql
       uses: azure/sql-action@v1
       with:
-	  server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
-	  connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
-	  sql-file: './loggingschema.sql'
-     
-   
+        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
+        connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+        sql-file: './loggingschema.sql'
 
-add_instrumentation_key:
+  add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
     needs: [create_app_insights, deploy_app]
@@ -242,9 +240,9 @@ add_instrumentation_key:
        creds: ${{ secrets.AZURE_CREDENTIALS }}   
     - name: Add ik setting
       run: |
-       az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings APPINSIGHTS_INSTRUMENTATIONKEY=${{needs.create_app_insights.outputs.ik}}
+        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings APPINSIGHTS_INSTRUMENTATIONKEY=${{needs.create_app_insights.outputs.ik}}
        
- add_connection_string:
+  add_connection_string:
    name: 'Add connection string to app'
    runs-on: ubuntu-latest
    needs: [create_ms_sql, deploy_app]
