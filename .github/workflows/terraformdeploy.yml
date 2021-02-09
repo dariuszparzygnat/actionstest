@@ -213,7 +213,6 @@ jobs:
       id: download-sql
       with:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
-	  
     - name: Azure Login
       uses: azure/login@v1
       with:
