@@ -189,40 +189,43 @@ jobs:
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
   
-	restore_db_data:
-	  name: 'Restore db schema and data'
-	  runs-on: windows-latest
-	  needs: [create_ms_sql]
-	    
-	  defaults:
-	    run:
-	      shell: bash    
-	  steps:
-	  - name: Download a file
-	    uses: carlosperate/download-file-action@v1.0.3
-	    id: download-migrationtool
-	    with:
-	      file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/Updated_Schema_CopyData.zip'
-	  - name: Restore data
-	    shell: cmd
-	    run: |
-	      tar -xf Updated_Schema_CopyData.zip
-	      workbook.migration.exe COPY "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+  restore_db_data:
+    name: 'Restore db schema and data'
+    runs-on: windows-latest
+    needs: [create_ms_sql]
+
+    defaults:
+     run:
+       shell: bash    
+    steps:
+    - name: Download a file
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-migrationtool
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/Updated_Schema_CopyData.zip'
+    - name: Restore data
+      shell: cmd
+      run: |
+        tar -xf Updated_Schema_CopyData.zip
+        workbook.migration.exe COPY "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
     - name: Download a sql file
-	    uses: carlosperate/download-file-action@v1.0.3
-	    id: download-sql
-	    with:
-	      file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-sql
+      with:
+	  file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
+	  
     - name: Azure Login
       uses: azure/login@v1
       with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}   
-    - name: Add missing sql schema
+	  creds: ${{ secrets.AZURE_CREDENTIALS }} 
+    - name: Run missing sql
       uses: azure/sql-action@v1
       with:
-        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net
-        connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
-        sql-file: './loggingschema.sql'
+	  server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net"
+	  connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+	  sql-file: './loggingschema.sql'
+     
+   
 
 add_instrumentation_key:
     name: 'Add ik to settings'
@@ -241,7 +244,7 @@ add_instrumentation_key:
       run: |
        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings APPINSIGHTS_INSTRUMENTATIONKEY=${{needs.create_app_insights.outputs.ik}}
        
-  add_connection_string:
+ add_connection_string:
    name: 'Add connection string to app'
    runs-on: ubuntu-latest
    needs: [create_ms_sql, deploy_app]
@@ -258,4 +261,3 @@ add_instrumentation_key:
       run: |
        az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings Connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
        
-
