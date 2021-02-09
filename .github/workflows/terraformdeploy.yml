@@ -189,33 +189,42 @@ jobs:
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
   
-  restore_db_data:
-    name: 'Restore db data'
-    runs-on: windows-latest
-    needs: [create_ms_sql]
-    
-    defaults:
-      run:
-        shell: bash    
-    steps:
-    - name: Download a restore tool
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-jsondatabasetool
+	restore_db_data:
+	  name: 'Restore db schema and data'
+	  runs-on: windows-latest
+	  needs: [create_ms_sql]
+	    
+	  defaults:
+	    run:
+	      shell: bash    
+	  steps:
+	  - name: Download a file
+	    uses: carlosperate/download-file-action@v1.0.3
+	    id: download-migrationtool
+	    with:
+	      file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/Updated_Schema_CopyData.zip'
+	  - name: Restore data
+	    shell: cmd
+	    run: |
+	      tar -xf Updated_Schema_CopyData.zip
+	      workbook.migration.exe COPY "${{ secrets.SOURCE_DB_CONNECTIONSTRING }}" "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+    - name: Download a sql file
+	    uses: carlosperate/download-file-action@v1.0.3
+	    id: download-sql
+	    with:
+	      file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/loggingschema.sql'
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/jsondatabasetool.zip'
-    - name: Download a schema
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-schema
+       creds: ${{ secrets.AZURE_CREDENTIALS }}   
+    - name: Add missing sql schema
+      uses: azure/sql-action@v1
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/test/db.zip'
-    - name: Restore data
-      shell: cmd
-      run: |
-        tar -xf jsondatabasetool.zip
-        tar -xf db.zip
-        WorkBookJSONDatabaseTool.exe action=create folder="./empty/" connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;" BurnAndKillObjectIfExist=true
-         
-  add_instrumentation_key:
+        server-name: "wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net
+        connection-string: "Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+        sql-file: './loggingschema.sql'
+
+add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
     needs: [create_app_insights, deploy_app]
