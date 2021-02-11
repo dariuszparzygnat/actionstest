@@ -34,7 +34,7 @@ jobs:
       uses: carlosperate/download-file-action@v1.0.3
       id: download_deploy_file
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/terraform/deploy.tf'
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/terraform/deploy.tf?sv=${{ secrets.ACCOUNT_SAS }}'
         
     - name: Download a file
       uses: carlosperate/download-file-action@v1.0.3
