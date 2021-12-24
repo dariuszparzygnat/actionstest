@@ -23,14 +23,14 @@ jobs:
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: 'Deploy to Azure Container Instances'
-    uses: 'azure/aci-deploy@v1'
-    with:
-      resource-group: dp_test
-      dns-name-label: wbtestsql66
-      image: wbdevcr.azurecr.io/databases/empty:latest
-      # cpu: 1   #Optional
-      # memory: 0.1   #Optional
-      registry-username: ${{ secrets.REGISTRY_USERNAME }}
-      registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-      name: wbtestsql66
-      location: 'west europe'
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: dp_test
+        dns-name-label: wbtestsql66
+        image: wbdevcr.azurecr.io/databases/empty:latest
+        # cpu: 1   #Optional
+        # memory: 0.1   #Optional
+        registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        name: wbtestsql66
+        location: 'west europe'
