@@ -6,6 +6,9 @@ on:
       withsql:
         description: 'If sql needed, then true'
         required: false
+      withdbcontainername:
+        description: 'If the db other than empty is required'
+        required: false
 
 jobs:
   create_db_container:
@@ -27,7 +30,7 @@ jobs:
       with:
         resource-group: dp_test
         dns-name-label: wbtestsql66
-        image: wbdevcr.azurecr.io/databases/empty:latest
+        image: wbdevcr.azurecr.io/databases/${{github.event.inputs.withdbcontainername == ''? empty:rhino}}:latest
         ports: 1433
         cpu: 2   #Optional
         memory: 4   #Optional
