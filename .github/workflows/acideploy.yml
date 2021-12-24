@@ -28,6 +28,7 @@ jobs:
         resource-group: dp_test
         dns-name-label: wbtestsql66
         image: wbdevcr.azurecr.io/databases/empty:latest
+        port: 1433
         # cpu: 1   #Optional
         # memory: 0.1   #Optional
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
