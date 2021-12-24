@@ -30,7 +30,7 @@ jobs:
       with:
         resource-group: dp_test
         dns-name-label: wbtestsql66
-        image: wbdevcr.azurecr.io/databases/${{github.event.inputs.withdbcontainername == ''? empty:rhino}}:latest
+        image: ${{ github.event.inputs.withdbcontainername == '' && 'wbdevcr.azurecr.io/databases/empty:latest' ||  format('wbdevcr.azurecr.io/databases/{0}:latest', github.event.inputs.withdbcontainername)  }} 
         ports: 1433
         cpu: 2   #Optional
         memory: 4   #Optional
