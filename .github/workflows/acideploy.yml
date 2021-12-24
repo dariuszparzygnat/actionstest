@@ -1,0 +1,47 @@
+name: 'Terraform'
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildnumber:
+        description: 'Build number'
+        required: true
+      withappinsights:
+        description: 'If app insights needed, then true'
+        required: false
+      withsql:
+        description: 'If sql needed, then true'
+        required: false
+      withdeploy:
+        description: 'If app deploy is not needed, then false'
+        required: false
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: '.' 
+
+jobs:
+  create_db_container:
+    name: 'Create empty database container'
+    runs-on: ubuntu-latest 
+
+    defaults:
+    run:
+      shell: bash
+    
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Deploy to Azure Container Instances'
+    uses: 'azure/aci-deploy@v1'
+    with:
+      resource-group: dp_test
+      dns-name-label: wbtestsql66
+      image: wbdevcr.azurecr.io/databases/empty:latest
+      # cpu: 1   #Optional
+      # memory: 0.1   #Optional
+      registry-username: ${{ secrets.REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+      name: wbtestsql66
+      location: 'west europe'
