@@ -1,26 +1,15 @@
-name: 'Terraform'
+name: 'ACI_deploy'
 
 on:
   workflow_dispatch:
     inputs:
-      buildnumber:
-        description: 'Build number'
-        required: true
-      withappinsights:
-        description: 'If app insights needed, then true'
-        required: false
       withsql:
         description: 'If sql needed, then true'
         required: false
-      withdeploy:
-        description: 'If app deploy is not needed, then false'
-        required: false
-
-env:
-  AZURE_WEBAPP_PACKAGE_PATH: '.' 
 
 jobs:
   create_db_container:
+    if: github.event.inputs.withsql == 'true'
     name: 'Create empty database container'
     runs-on: ubuntu-latest 
 
