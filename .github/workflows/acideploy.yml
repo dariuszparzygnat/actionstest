@@ -9,12 +9,18 @@ on:
       withdbcontainername:
         description: 'If the db other than empty is required'
         required: false
+      withdbcontainerversion:
+        description: 'If the specific version of db is required. Default: latest'
+        required: false
 
 jobs:
   create_db_container:
     if: github.event.inputs.withsql == 'true'
     name: 'Create empty database container'
     runs-on: ubuntu-latest 
+    env:
+      container_version:  ${{ github.event.inputs.withdbcontainerversion == '' && 'latest' ||  github.event.inputs.withdbcontainerversion  }} 
+      container_name: ${{ github.event.inputs.withdbcontainername == '' && 'empty' ||  github.event.inputs.withdbcontainername  }}
 
     defaults:
       run:
@@ -30,10 +36,10 @@ jobs:
       with:
         resource-group: dp_test
         dns-name-label: wbtestsql66
-        image: ${{ github.event.inputs.withdbcontainername == '' && 'wbdevcr.azurecr.io/databases/empty:latest' ||  format('wbdevcr.azurecr.io/databases/{0}:latest', github.event.inputs.withdbcontainername)  }} 
+        image: ${{ format('wbdevcr.azurecr.io/databases/{0}:{1}', env.container_name, env.container_version)  }} 
         ports: 1433
         cpu: 2   #Optional
-        memory: 4   #Optional
+        memory: 8   #Optional
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         name: wbtestsql66
