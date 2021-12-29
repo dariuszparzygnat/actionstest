@@ -1,26 +1,38 @@
-name: 'ACI_deploy'
+name: 'Deploy db as container'
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      withsql:
-        description: 'If sql needed, then true'
-        required: false
+      withresourcegroumname:
+        description: 'Resource group name where container will be placed'
+        required: true
+      withcontainerinstancename:
+        description: 'Container instance name that will be used in dns name of container'
+        required: true
       withdbcontainername:
-        description: 'If the db other than empty is required'
+        description: 'If the db other than empty is required. Default: empty'
         required: false
       withdbcontainerversion:
         description: 'If the specific version of db is required. Default: latest'
         required: false
-
+      withregion:
+        description: 'Location of the container. Default: west europe'
+        default: False
+    outputs:
+      sqlconnectionstr:
+        description: 'Connection string'
+        value: ${{ jobs.create_db_container.outputs.connectionstring}}
+        run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
 jobs:
   create_db_container:
-    if: github.event.inputs.withsql == 'true'
-    name: 'Create empty database container'
+    name: 'Create database container'
     runs-on: ubuntu-latest 
     env:
       container_version:  ${{ github.event.inputs.withdbcontainerversion == '' && 'latest' ||  github.event.inputs.withdbcontainerversion  }} 
       container_name: ${{ github.event.inputs.withdbcontainername == '' && 'empty' ||  github.event.inputs.withdbcontainername  }}
+      container_location: ${{ github.event.inputs.withregion == '' && 'west europe' ||  github.event.inputs.withregion  }}
+    outputs:
+      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', github.event.inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD}}
 
     defaults:
       run:
@@ -34,13 +46,13 @@ jobs:
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
-        resource-group: dp_test
-        dns-name-label: wbtestsql66
+        resource-group: ${{github.event.inputs.withresourcegroumname}}
+        dns-name-label: ${{github.event.inputs.withcontainerinstancename}}
         image: ${{ format('wbdevcr.azurecr.io/databases/{0}:{1}', env.container_name, env.container_version)  }} 
         ports: 1433
         cpu: 2   #Optional
         memory: 8   #Optional
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        name: wbtestsql66
-        location: 'west europe'
+        name: ${{github.event.inputs.withcontainerinstancename}}
+        location: ${{env.container_location}} 
