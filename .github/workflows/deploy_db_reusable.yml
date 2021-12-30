@@ -6,18 +6,23 @@ on:
       withresourcegroumname:
         description: 'Resource group name where container will be placed'
         required: true
+        type: string
       withcontainerinstancename:
         description: 'Container instance name that will be used in dns name of container'
         required: true
+        type: string
       withdbcontainername:
         description: 'If the db other than empty is required. Default: empty'
         required: false
+        type: string
       withdbcontainerversion:
         description: 'If the specific version of db is required. Default: latest'
         required: false
+        type: string
       withregion:
         description: 'Location of the container. Default: west europe'
         required: false
+        type: string
     outputs:
       sqlconnectionstr:
         description: 'Connection string'
