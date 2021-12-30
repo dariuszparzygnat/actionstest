@@ -44,11 +44,11 @@ jobs:
     name: 'Create database container'
     runs-on: ubuntu-latest 
     env:
-      container_version:  ${{ github.event.inputs.withdbcontainerversion == '' && 'latest' ||  github.event.inputs.withdbcontainerversion  }} 
-      container_name: ${{ github.event.inputs.withdbcontainername == '' && 'empty' ||  github.event.inputs.withdbcontainername  }}
-      container_location: ${{ github.event.inputs.withregion == '' && 'west europe' ||  github.event.inputs.withregion  }}
+      container_version:  ${{ inputs.withdbcontainerversion == '' && 'latest' ||  inputs.withdbcontainerversion  }} 
+      container_name: ${{ inputs.withdbcontainername == '' && 'empty' ||  inputs.withdbcontainername  }}
+      container_location: ${{ inputs.withregion == '' && 'west europe' ||  inputs.withregion  }}
     outputs:
-      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', github.event.inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD)}}
+      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD)}}
 
     defaults:
       run:
@@ -62,13 +62,13 @@ jobs:
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
-        resource-group: ${{github.event.inputs.withresourcegroumname}}
-        dns-name-label: ${{github.event.inputs.withcontainerinstancename}}
+        resource-group: ${{inputs.withresourcegroumname}}
+        dns-name-label: ${{inputs.withcontainerinstancename}}
         image: ${{ format('wbdevcr.azurecr.io/databases/{0}:{1}', env.container_name, env.container_version)  }} 
         ports: 1433
         cpu: 2   #Optional
         memory: 8   #Optional
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        name: ${{github.event.inputs.withcontainerinstancename}}
+        name: ${{inputs.withcontainerinstancename}}
         location: ${{env.container_location}} 
