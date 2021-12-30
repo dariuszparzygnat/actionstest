@@ -61,6 +61,7 @@ jobs:
         terraform apply -var="postfix=${{ github.event.inputs.postfix }}" -auto-approve
 
   deploy_db:
+    needs: [create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
     with: 
       withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
