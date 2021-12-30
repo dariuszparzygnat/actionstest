@@ -6,9 +6,17 @@ on:
       postfix:
         description: 'The part of the name that will be use to identify resource group and container'
         required: true
+      containerversion:
+        description: 'Container version. Default: latest'
+        required: false
+      containername:
+        description: 'Container name. Default: empty'
+        required: false
+      location:
+        description: 'Where resource group and container will be located. Default: west europe'
 
 env:
-  AZURE_WEBAPP_PACKAGE_PATH: '.' 
+  azure_location: ${{ github.event.inputs.location == '' && 'west europe' ||  github.event.inputs.location  }} 
 
 jobs:
   create_infrastructure_azure:
@@ -48,7 +56,7 @@ jobs:
         export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
         export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
         export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
-        terraform plan -var="postfix=${{ github.event.inputs.postfix }}"
+        terraform plan -var="postfix=${{ github.event.inputs.postfix }}" -var="location=${{ env.azure_location }}"
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -58,7 +66,7 @@ jobs:
         export ARM_CLIENT_SECRET=${{ secrets.ARM_CLIENT_SECRET }}
         export ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}
         export ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}
-        terraform apply -var="postfix=${{ github.event.inputs.postfix }}" -auto-approve
+        terraform apply -var="postfix=${{ github.event.inputs.postfix }}" -var="location=${{ env.azure_location }}" -auto-approve
 
   deploy_db:
     needs: [create_infrastructure_azure]
@@ -66,6 +74,9 @@ jobs:
     with: 
       withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
+      withdbcontainerversion: ${{github.event.inputs.containerversion}}
+      withdbcontainername: ${{github.event.inputs.containername}}
+      withregion: ${{env.azure_location}}
     secrets:
       DB_USERID: ${{ secrets.DB_USERID }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

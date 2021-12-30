@@ -38,7 +38,6 @@ on:
       sqlconnectionstr:
         description: 'Connection string'
         value: ${{ jobs.create_db_container.outputs.connectionstring}}
-        # run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
 jobs:
   create_db_container:
     name: 'Create database container'
