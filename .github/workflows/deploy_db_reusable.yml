@@ -1,4 +1,4 @@
-name: 'Deploy db as container'
+name: 'Deploy db as container reusable'
 
 on:
   workflow_call:
