@@ -27,7 +27,7 @@ on:
       sqlconnectionstr:
         description: 'Connection string'
         value: ${{ jobs.create_db_container.outputs.connectionstring}}
-        run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
+        # run: echo "::set-output name=sqlconnectionstr::$(terraform output connectionstring)"  
 jobs:
   create_db_container:
     name: 'Create database container'
@@ -37,7 +37,7 @@ jobs:
       container_name: ${{ github.event.inputs.withdbcontainername == '' && 'empty' ||  github.event.inputs.withdbcontainername  }}
       container_location: ${{ github.event.inputs.withregion == '' && 'west europe' ||  github.event.inputs.withregion  }}
     outputs:
-      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', github.event.inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD}}
+      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', github.event.inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD)}}
 
     defaults:
       run:
