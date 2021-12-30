@@ -66,3 +66,8 @@ jobs:
     with: 
       withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
+    secrets:
+      DB_USERID: ${{ secrets.DB_USERID }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
