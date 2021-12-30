@@ -17,7 +17,7 @@ on:
         required: false
       withregion:
         description: 'Location of the container. Default: west europe'
-        default: False
+        required: false
     outputs:
       sqlconnectionstr:
         description: 'Connection string'
