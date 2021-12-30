@@ -61,7 +61,7 @@ jobs:
         terraform apply -var="postfix=${{ github.event.inputs.postfix }}" -auto-approve
 
   deploy_db:
-    uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml
+    uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@main
     with: 
       withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
