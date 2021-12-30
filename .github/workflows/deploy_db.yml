@@ -76,7 +76,7 @@ jobs:
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
       withdbcontainerversion: ${{github.event.inputs.containerversion}}
       withdbcontainername: ${{github.event.inputs.containername}}
-      withregion: ${{env.azure_location}}
+      # withregion: ${{env.azure_location}}
     secrets:
       DB_USERID: ${{ secrets.DB_USERID }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
