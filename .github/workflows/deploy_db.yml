@@ -15,13 +15,15 @@ on:
       location:
         description: 'Where resource group and container will be located. Default: west europe'
 
-env:
-  azure_location: ${{ github.event.inputs.location == '' && 'west europe' ||  github.event.inputs.location  }} 
+# env:
+#   azure_location: ${{ github.event.inputs.location == '' && 'west europe' ||  github.event.inputs.location  }} 
 
 jobs:
   create_infrastructure_azure:
     name: 'Create resource group on Azure'
     runs-on: ubuntu-latest
+    env:
+      azure_location: ${{ github.event.inputs.location == '' && 'west europe' ||  github.event.inputs.location  }} 
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -71,6 +73,8 @@ jobs:
   deploy_db:
     needs: [create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
+    env:
+      azure_location: ${{ github.event.inputs.location == '' && 'west europe' ||  github.event.inputs.location  }} 
     with: 
       withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
