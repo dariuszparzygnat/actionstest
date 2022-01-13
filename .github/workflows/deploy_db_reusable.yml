@@ -47,7 +47,7 @@ jobs:
       container_name: ${{ inputs.withdbcontainername == '' && 'empty' ||  inputs.withdbcontainername  }}
       container_location: ${{ inputs.withregion == '' && 'west europe' ||  inputs.withregion  }}
     outputs:
-      connectionstring: ${{ format('Server=tcp:{0}.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', inputs.withcontainerinstancename, secrets.DB_USERID, secrets.DB_PASSWORD)}}
+      connectionstring: ${{ format('Server=tcp:{0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', steps.getting_containerfqdn.outputs.containerfqdn, secrets.DB_USERID, secrets.DB_PASSWORD)}}
 
     defaults:
       run:
@@ -71,3 +71,6 @@ jobs:
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         name: ${{inputs.withcontainerinstancename}}
         location: ${{env.container_location}} 
+    - name: Set container fqdn
+      id: getting_containerfqdn
+      run: echo "::set-output name=containerfqdn::$(az container show --resource-group ${{inputs.withresourcegroumname}} --name ${{inputs.withcontainerinstancename}} --query "{FQDN:ipAddress.fqdn}")"  
