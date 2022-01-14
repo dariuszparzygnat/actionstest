@@ -35,7 +35,7 @@ on:
       AZURE_CREDENTIALS:
         required: true
     outputs:
-      sqlconnectionstr:
+      sqlconnectionstring:
         description: 'Connection string'
         value: ${{ jobs.create_db_container.outputs.connectionstring}}
 jobs:
