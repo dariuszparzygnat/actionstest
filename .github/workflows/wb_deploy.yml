@@ -118,8 +118,8 @@ jobs:
     needs: [create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
     with: 
-      withresourcegroumname: ${{format('wbtestrg{0}', github.event.inputs.postfix)}}
-      withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}
+      withresourcegroumname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
+      withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.buildnumber)}}
       withdbcontainerversion: ${{github.event.inputs.containerversion}}
       withdbcontainername: ${{github.event.inputs.containername}}
       # withregion: ${{env.azure_location}}
