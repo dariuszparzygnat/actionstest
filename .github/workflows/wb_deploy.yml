@@ -162,7 +162,7 @@ jobs:
   add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
-    needs: [create_app_insights, deploy_app]
+    needs: [create_app_insights, create_infrastructure_azure]
     
     defaults:
       run:
@@ -179,7 +179,7 @@ jobs:
   add_connection_string:
    name: 'Add connection string to app'
    runs-on: ubuntu-latest
-   needs: [deploy_db, deploy_app]
+   needs: [deploy_db, create_infrastructure_azure]
    
    defaults:
      run:
@@ -191,5 +191,5 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}   
     - name: Add connection string to appsettings
       run: |
-       az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings Connectionstring="Server=tcp:wbtestsqlserver${{ github.event.inputs.buildnumber }}.database.windows.net,1433;Initial Catalog=wbtestsqldatabase${{ github.event.inputs.buildnumber }};Persist Security Info=False;User ID=${{secrets.DB_USERID}};Password=${{secrets.DB_PASSWORD}};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;"
+       az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings Connectionstring=${{needs.deploy_db.outputs.sqlconnectionstring}}
        
