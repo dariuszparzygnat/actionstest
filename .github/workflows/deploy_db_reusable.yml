@@ -74,5 +74,5 @@ jobs:
     - name: Set container fqdn
       id: getting_containerfqdn
       run: |
-        fqdn=$(az container show --resource-group ${{inputs.withresourcegroumname}} --name ${{inputs.withcontainerinstancename}} --query ipAddress.fqdn | cut -d """ -f 2)
+        fqdn=$(az container show --resource-group ${{inputs.withresourcegroumname}} --name ${{inputs.withcontainerinstancename}} --query ipAddress.fqdn | cut -d \" -f 2)
         echo "::set-output name=containerfqdn::$fqdn"  
