@@ -191,5 +191,5 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}   
     - name: Add connection string to appsettings
       run: |
-       az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings Connectionstring="${{needs.deploy_db.outputs.sqlconnectionstring}}"
+       az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings Connectionstring="${{ format('Server=tcp:{0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}"
        
