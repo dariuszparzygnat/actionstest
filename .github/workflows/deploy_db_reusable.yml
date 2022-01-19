@@ -39,7 +39,7 @@ on:
         description: 'Connection string'
         value: ${{ jobs.create_db_container.outputs.connectionstring}}
       container_address: 
-        descriptiom: 'Container fqdn'
+        description: 'Container fqdn'
         value: ${{ jobs.create_db_container.outputs.container_address}}
 jobs:
   create_db_container:
