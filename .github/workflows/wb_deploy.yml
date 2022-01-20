@@ -6,11 +6,17 @@ on:
       buildnumber:
         description: 'Build number'
         required: true
+      containerversion:
+        description: 'Sql container version. Default: latest'
+        required: false
+      containername:
+        description: 'Sql container name. Default: empty'
+        required: false
       withappinsights:
-        description: 'If app insights needed, then true'
+        description: 'If app insights not needed, then false'
         required: false
       withsql:
-        description: 'If sql needed, then true'
+        description: 'If sql not needed, then false'
         required: false
       withdeploy:
         description: 'If app deploy is not needed, then false'
@@ -70,7 +76,7 @@ jobs:
         terraform apply -var="buildnumber=${{ github.event.inputs.buildnumber }}" -auto-approve
   
   create_app_insights:
-    if: github.event.inputs.withappinsights == 'true'
+    if: github.event.inputs.withappinsights != 'false'
     name: 'Create app insights on Azure'
     runs-on: ubuntu-latest
     needs: [create_infrastructure_azure]
@@ -114,7 +120,7 @@ jobs:
       run: echo "::set-output name=instrumentationkey::$(terraform output application_insights_instrumentation_key)"
 
   deploy_db:
-    if: github.event.inputs.withsql == 'true'
+    if: github.event.inputs.withsql != 'false'
     needs: [create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
     with: 
@@ -124,8 +130,6 @@ jobs:
       withdbcontainername: ${{github.event.inputs.containername}}
       # withregion: ${{env.azure_location}}
     secrets:
-      DB_USERID: ${{ secrets.DB_USERID }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}

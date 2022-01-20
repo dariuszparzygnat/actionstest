@@ -78,8 +78,6 @@ jobs:
       withdbcontainername: ${{github.event.inputs.containername}}
       # withregion: ${{env.azure_location}}
     secrets:
-      DB_USERID: ${{ secrets.DB_USERID }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}

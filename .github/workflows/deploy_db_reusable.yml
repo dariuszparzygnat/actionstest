@@ -24,10 +24,6 @@ on:
         required: false
         type: string
     secrets:
-      DB_USERID:
-        required: true
-      DB_PASSWORD:
-        required: true
       REGISTRY_USERNAME:
         required: true
       REGISTRY_PASSWORD:
