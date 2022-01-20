@@ -35,9 +35,6 @@ on:
       AZURE_CREDENTIALS:
         required: true
     outputs:
-      sqlconnectionstring:
-        description: 'Connection string'
-        value: ${{ jobs.create_db_container.outputs.connectionstring}}
       container_address: 
         description: 'Container fqdn'
         value: ${{ jobs.create_db_container.outputs.container_address}}
@@ -50,7 +47,6 @@ jobs:
       container_name: ${{ inputs.withdbcontainername == '' && 'empty' ||  inputs.withdbcontainername  }}
       container_location: ${{ inputs.withregion == '' && 'west europe' ||  inputs.withregion  }}
     outputs:
-      connectionstring: ${{ format('Server=tcp:{0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;', steps.getting_containerfqdn.outputs.containerfqdn, secrets.DB_USERID, secrets.DB_PASSWORD)}}
       container_address: ${{ steps.getting_containerfqdn.outputs.containerfqdn }}
 
     defaults:
