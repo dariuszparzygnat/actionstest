@@ -27,4 +27,4 @@ jobs:
     - name: 'Add end date tag'
       run: |
         resourcegroupid=$(az group show --name wbtest${{github.event.inputs.postfix}} --query id | cut -d \" -f 2)
-        az tag update --resource-id resourcegroupid --operation merge --tags endDate=${{github.event.inputs.enddate}}  
+        az tag update --resource-id $resourcegroupid --operation merge --tags endDate=${{github.event.inputs.enddate}}  
