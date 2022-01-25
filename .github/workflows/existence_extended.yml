@@ -1,0 +1,30 @@
+name: 'Extend resources existence'
+
+on:
+  workflow_dispatch:
+    inputs:
+      postfix:
+        description: 'Build number/postfix of the resource group you want to keep longer'
+        required: true
+      enddate:
+        description: 'The date till you want resource group to stay. Format accepted: 2022-01-01'
+        required: true
+
+jobs:
+  add_endDate_tag:
+    name: 'Add end date tag on resource group'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+
+    steps:     
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Add end date tag'
+      run: |
+        resourcegroupid=$(az group show --name wbtest${{github.event.inputs.postfix}} --query id | cut -d \" -f 2)
+        az tag update --resource-id resourcegroupid --operation merge --tags endDate=${{github.event.inputs.enddate}}  
