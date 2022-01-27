@@ -7,7 +7,7 @@ on:
         description: 'Build number/postfix of the resource group you want to keep longer'
         required: true
       enddate:
-        description: 'The date till you want resource group to stay. Format accepted: 2022-01-01'
+        description: 'The date till you want resource group to stay. Format accepted: 2022-01-31'
         required: true
 
 jobs:
