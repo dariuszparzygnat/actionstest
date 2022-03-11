@@ -122,7 +122,7 @@ jobs:
   deploy_db:
     if: github.event.inputs.withsql != 'false'
     needs: [create_infrastructure_azure]
-    uses: Workbook/WorkBook.Infrastructure/.github/workflows/deploy_db_reusable.yml@master
+    uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
     with: 
       withresourcegroupname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.buildnumber)}}
@@ -172,7 +172,7 @@ jobs:
   add_instrumentation_key:
     name: 'Add ik to settings'
     needs: [create_app_insights, create_infrastructure_azure]
-    uses: Workbook/WorkBook.Infrastructure/.github/workflows/set_appsetting_reusable.yml@master
+    uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
     with: 
       webappname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
       resourcegroupname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}

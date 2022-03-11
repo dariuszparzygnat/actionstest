@@ -70,7 +70,7 @@ jobs:
 
   deploy_db:
     needs: [create_infrastructure_azure]
-    uses: Workbook/WorkBook.Infrastructure/.github/workflows/deploy_db_reusable.yml@master
+    uses: dariuszparzygnat/actionstest/.github/workflows/deploy_db_reusable.yml@master
     with: 
       withresourcegroupname: ${{format('wbtest{0}', github.event.inputs.postfix)}}
       withcontainerinstancename: ${{format('wbdbcontainer{0}', github.event.inputs.postfix)}}

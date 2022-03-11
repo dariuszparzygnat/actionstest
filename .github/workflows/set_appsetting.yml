@@ -18,7 +18,7 @@ on:
 
 jobs:
   set_app_setting:
-    uses: Workbook/WorkBook.Infrastructure/.github/workflows/set_appsetting_reusable.yml@master
+    uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
     with: 
       webappname: ${{github.event.inputs.webappname}}
       resourcegroupname: ${{github.event.inputs.resourcegroupname}}
