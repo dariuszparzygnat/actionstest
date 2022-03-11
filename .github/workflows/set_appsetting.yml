@@ -1,0 +1,28 @@
+name: 'Set appsetting for website'
+
+on:
+  workflow_dispatch:
+    inputs:
+      webappname:
+        description: 'Web app name'
+        required: true
+      resourcegroupname:
+        description: 'Resource group name'
+        required: true
+      settingname:
+        description: 'Name of setting'
+        required: true
+      settingvalue:
+        description: 'Value of setting'
+        required: true
+
+jobs:
+  set_app_setting:
+    uses: Workbook/WorkBook.Infrastructure/.github/workflows/set_appsetting_reusable.yml@master
+    with: 
+      webappname: ${{github.event.inputs.webappname}}
+      resourcegroupname: ${{github.event.inputs.resourcegroupname}}
+      settingname: ${{github.event.inputs.settingname}}
+      settingvalue: ${{github.event.inputs.settingvalue}}  
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}

@@ -1,0 +1,37 @@
+name: 'Set appsetting for website reusable'
+
+on:
+  workflow_call:
+    inputs:
+      webappname:
+        description: 'Web app name'
+        required: true
+      resourcegroupname:
+        description: 'Resource group name'
+        required: true
+      settingname:
+        description: 'Name of setting'
+        required: true
+      settingvalue:
+        description: 'Value of setting'
+        required: true
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+jobs:
+  set_applicationsetting:
+    name: 'Set application setting'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}   
+    - name: Set application setting
+      run: |
+        az webapp config appsettings set -g ${{ github.event.inputs.resourcegroupname }} -n ${{ github.event.inputs.webappname }} --settings ${{github.event.inputs.settingname}}=${{github.event.inputs.settingvalue}}  
+  

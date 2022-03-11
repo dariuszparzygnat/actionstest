@@ -3,7 +3,7 @@ name: 'Deploy db as container reusable'
 on:
   workflow_call:
     inputs:
-      withresourcegroumname:
+      withresourcegroupname:
         description: 'Resource group name where container will be placed'
         required: true
         type: string
@@ -57,7 +57,7 @@ jobs:
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
       with:
-        resource-group: ${{inputs.withresourcegroumname}}
+        resource-group: ${{inputs.withresourcegroupname}}
         dns-name-label: ${{inputs.withcontainerinstancename}}
         image: ${{ format('wbdevcr.azurecr.io/databases/{0}:{1}', env.container_name, env.container_version)  }} 
         ports: 1433
@@ -70,5 +70,5 @@ jobs:
     - name: Set container fqdn
       id: getting_containerfqdn
       run: |
-        fqdn=$(az container show --resource-group ${{inputs.withresourcegroumname}} --name ${{inputs.withcontainerinstancename}} --query ipAddress.fqdn | cut -d \" -f 2)
+        fqdn=$(az container show --resource-group ${{inputs.withresourcegroupname}} --name ${{inputs.withcontainerinstancename}} --query ipAddress.fqdn | cut -d \" -f 2)
         echo "::set-output name=containerfqdn::$fqdn"  
