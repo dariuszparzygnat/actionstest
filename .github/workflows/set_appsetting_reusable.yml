@@ -6,15 +6,19 @@ on:
       webappname:
         description: 'Web app name'
         required: true
+        type: string
       resourcegroupname:
         description: 'Resource group name'
         required: true
+        type: string
       settingname:
         description: 'Name of setting'
         required: true
+        type: string
       settingvalue:
         description: 'Value of setting'
         required: true
+        type: string
     secrets:
       AZURE_CREDENTIALS:
         required: true
