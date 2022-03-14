@@ -154,9 +154,9 @@ jobs:
       uses: azure/login@v1
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Wait to confirm infrastructure is available
+    - name: Wait to confirm infrastructure is available by restarting
       run: |
-        az resource wait --exists --name 'wbtest${{ github.event.inputs.buildnumber }}' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --namespace Microsoft.Web --resource-type sites
+        az webapp restart --name 'wbtest${{ github.event.inputs.buildnumber }}' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}'
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
