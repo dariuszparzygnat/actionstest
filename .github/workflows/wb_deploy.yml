@@ -170,6 +170,7 @@ jobs:
         az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings ConfiguredForHTTPS=true
   
   add_instrumentation_key:
+    name: "Add ik"
     needs: [create_app_insights, create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
     with: 
