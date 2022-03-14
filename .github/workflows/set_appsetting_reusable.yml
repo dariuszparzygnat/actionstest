@@ -37,5 +37,5 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}   
     - name: Set application setting
       run: |
-        az webapp config appsettings set -g ${{ github.event.inputs.resourcegroupname }} -n ${{ github.event.inputs.webappname }} --settings ${{github.event.inputs.settingname}}=${{github.event.inputs.settingvalue}}  
+        az webapp config appsettings set -g ${{ github.event.inputs.resourcegroupname }} -n ${{ github.event.inputs.webappname }} -o none --settings "${{github.event.inputs.settingname}}"="${{github.event.inputs.settingvalue}}"  
   
