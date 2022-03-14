@@ -174,10 +174,10 @@ jobs:
     needs: [create_app_insights, create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
     with: 
-      webappname: '${{format('wbtest{0}', github.event.inputs.buildnumber)}}'
-      resourcegroupname: '${{format('wbtest{0}', github.event.inputs.buildnumber)}}'
-      settingname: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-      settingvalue: '${{needs.create_app_insights.outputs.ik}}'
+      webappname: "${{format('wbtest{0}', github.event.inputs.buildnumber)}}"
+      resourcegroupname: "${{format('wbtest{0}', github.event.inputs.buildnumber)}}"
+      settingname: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      settingvalue: "${{needs.create_app_insights.outputs.ik}}"  
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
