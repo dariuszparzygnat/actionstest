@@ -167,7 +167,7 @@ jobs:
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
     - name: 'Set appsettings variables'
       run: |
-        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConfiguredForHTTPS=true AzureKey=${{secrets.AzureKey}} 
+        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}'  -o none --settings "ConfiguredForHTTPS"="true" "AzureKey"="${{secrets.AzureKey}}" 
   
   add_instrumentation_key:
     name: 'Add ik to settings'
