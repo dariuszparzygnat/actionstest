@@ -157,11 +157,9 @@ jobs:
     - name: Wait to confirm infrastructure is available by restarting
       run: |
         az webapp restart --name 'wbtest${{ github.event.inputs.buildnumber }}' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}'
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: 'wbtest${{ github.event.inputs.buildnumber }}'
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip'
+    - name: Deploy using az
+      run: |
+        az webapp deploy --name 'wbtest${{ github.event.inputs.buildnumber }}' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip
     - name: 'Virtual path settings'
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
