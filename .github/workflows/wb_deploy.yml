@@ -154,16 +154,16 @@ jobs:
       uses: azure/login@v1
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Deploy using az
-      run: |
-        az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --timeout 1800000
     - name: 'Virtual path settings'
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
     - name: 'Set appsettings variables'
       run: |
         az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings "ConfiguredForHTTPS"="true" "AzureKey"="${{secrets.AZUREKEY}}"
-  
+    - name: 'Deploy using az'
+      run: |
+        az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --timeout 1800000
+
   add_instrumentation_key:
     name: 'Add ik to settings'
     runs-on: ubuntu-latest
