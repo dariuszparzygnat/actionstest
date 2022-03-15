@@ -162,16 +162,16 @@ jobs:
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
     - name: 'Set appsettings variables'
       run: |
-        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings ConfiguredForHTTPS=true
+        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings ConfiguredForHTTPS=true AzureKey=${{secrets.AZUREKEY}}
   
   add_instrumentation_key:
     needs: [create_app_insights, create_infrastructure_azure]
     uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
     with: 
-      webappname: wbtest69420
-      resourcegroupname: wbtest69420
-      settingname: APPINSIGHTS_INSTRUMENTATIONKEY
-      settingvalue: s123
+      webappname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
+      resourcegroupname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
+      settingname: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+      settingvalue: ${{needs.create_app_insights.outputs.ik}} 
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
