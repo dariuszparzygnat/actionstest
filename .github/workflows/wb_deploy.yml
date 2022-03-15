@@ -166,6 +166,7 @@ jobs:
   
   add_instrumentation_key:
     name: 'Add ik to settings'
+    runs-on: ubuntu-latest
     needs: [create_app_insights, create_infrastructure_azure]
 
     defaults:
