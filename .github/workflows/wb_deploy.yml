@@ -156,7 +156,7 @@ jobs:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Deploy using az
       run: |
-        az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip
+        az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --timeout 1800000
     - name: 'Virtual path settings'
       run: |
         az resource update --name 'wbtest${{ github.event.inputs.buildnumber }}/config/web' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}' --resource-type 'Microsoft.Web/sites/config' --set 'properties.virtualApplications=[{"virtualPath":"\/","physicalPath":"site\\wwwroot","virtualDirectories":null},{"virtualPath":"\/api","physicalPath":"site\\wwwroot\\api","virtualDirectories":null,"preloadEnabled":true},{"virtualPath":"\/report","physicalPath":"site\\wwwroot\\report","virtualDirectories":null,"preloadEnabled":true}]'
@@ -165,15 +165,20 @@ jobs:
         az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings ConfiguredForHTTPS=true AzureKey=${{secrets.AZUREKEY}}
   
   add_instrumentation_key:
+    name: 'Add ik to settings'
     needs: [create_app_insights, create_infrastructure_azure]
-    uses: dariuszparzygnat/actionstest/.github/workflows/set_appsetting_reusable.yml@master
-    with: 
-      webappname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
-      resourcegroupname: ${{format('wbtest{0}', github.event.inputs.buildnumber)}}
-      settingname: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-      settingvalue: ${{needs.create_app_insights.outputs.ik}} 
-    secrets:
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Add ik setting
+      run: |
+        az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings APPINSIGHTS_INSTRUMENTATIONKEY=${{needs.create_app_insights.outputs.ik}}
 
   add_connection_string:
    name: 'Add connection string to app'
