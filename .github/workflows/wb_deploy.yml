@@ -154,9 +154,6 @@ jobs:
       uses: azure/login@v1
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # - name: Wait to confirm infrastructure is available by restarting
-    #   run: |
-    #     az webapp restart --name 'wbtest${{ github.event.inputs.buildnumber }}' --resource-group 'wbtest${{ github.event.inputs.buildnumber }}'
     - name: Deploy using az
       run: |
         az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip
