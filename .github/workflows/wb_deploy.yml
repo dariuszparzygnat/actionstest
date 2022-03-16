@@ -161,7 +161,7 @@ jobs:
       run: |
         az webapp config appsettings set -g 'wbtest${{ github.event.inputs.buildnumber }}' -n 'wbtest${{ github.event.inputs.buildnumber }}' -o none --settings "ConfiguredForHTTPS"="true" "AzureKey"="${{secrets.AZUREKEY}}"
     - name: 'Wait until restart finish'
-      run: sleep 30s
+      run: sleep 60s
     - name: 'Deploy using az'
       run: |
         az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --timeout 1800000
