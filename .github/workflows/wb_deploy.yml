@@ -201,4 +201,23 @@ jobs:
     - name: Add connection string to appsettings
       run: |
        az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConnectionString="${{ format('Data source={0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}"
-       
+  
+  update_subscription_id:
+    name: 'Update subscription id'
+    runs-on: ubuntu-latest
+    needs: [deploy_db]
+
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Download a deploy sql
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-sql
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/sql/deploymentsql.sql?sv=${{ secrets.ACCOUNT_SAS }}'
+    - name: Update subscription id 
+      uses: azure/sql-action@v1
+      with:
+        connection-string: "${{ format('Data source={0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}"
+        sql-file: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/deploymentsql.sql'
