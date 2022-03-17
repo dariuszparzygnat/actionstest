@@ -221,4 +221,6 @@ jobs:
         timeout_seconds: 1800
         max_attempts: 10
         retry_on: error
-        command: sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
+        command: |
+          sleep 10s 
+          sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
