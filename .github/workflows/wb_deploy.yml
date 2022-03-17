@@ -211,13 +211,9 @@ jobs:
       run:
         shell: bash
     steps:
-    - name: Download a deploy sql
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-sql
+    - name: Install a SQL Server suite of tools
+      uses: potatoqualitee/mssqlsuite@v1.1
       with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/sql/deploymentsql.sql?sv=${{ secrets.ACCOUNT_SAS }}'
-    - name: Update subscription id 
-      uses: azure/sql-action@v1
-      with:
-        connection-string: "${{ format('Data source={0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}"
-        sql-file: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/deploymentsql.sql'
+        install: sqlclient
+    - name: Run sqlclient
+        run: sqlcmd -S "${{ format('Data source={0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
