@@ -21,6 +21,9 @@ on:
       withdeploy:
         description: 'If app deploy is not needed, then false'
         required: false
+      subscriptionkey:
+        description: 'If you want to set a new subscription key for WorkBook'
+        required: false
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
@@ -203,7 +206,8 @@ jobs:
        az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConnectionString="${{ format('Data source={0},1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', needs.deploy_db.outputs.container_address, secrets.DB_USERID, secrets.DB_PASSWORD)}}"
   
   update_subscription_id:
-    name: 'Update subscription id'
+    if: github.event.inputs.subscriptionkey != ''
+    name: 'Update subscription key'
     runs-on: ubuntu-latest
     needs: [deploy_db]
 
@@ -222,5 +226,5 @@ jobs:
         max_attempts: 10
         retry_on: error
         command: |
-          sleep 10s 
-          sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
+          sleep 20s 
+          sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE SysVariabler SET [Vaerdi] = '${{ github.event.inputs.subscriptionkey }}' WHERE [VariableNavn] = 'WorkBookSubscriptionKey'"
