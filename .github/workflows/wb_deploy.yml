@@ -215,6 +215,10 @@ jobs:
       uses: potatoqualitee/mssqlsuite@v1.1
       with:
         install: sqlclient
-    - name: Run sqlclient
-      run: |
-         sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
+    - name: 'Run sqlcmd '
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1800
+        max_attempts: 10
+        retry_on: error
+        command: sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE LicenseValues SET [Value] = 'it works' WHERE [Key] = 'SubscriptionKey'"
