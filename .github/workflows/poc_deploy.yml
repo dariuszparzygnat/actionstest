@@ -28,6 +28,9 @@ jobs:
       uses: azure/login@v1
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Create slot'
+      run: |
+        az webapp deployment slot create --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --slot test --configuration-source wbtest${{ github.event.inputs.buildnumber }}
     - name: 'Deploy using az'
       uses: nick-fields/retry@v2
       with:
