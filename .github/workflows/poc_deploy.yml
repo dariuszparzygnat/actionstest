@@ -36,6 +36,6 @@ jobs:
       uses: nick-fields/retry@v2
       with:
         timeout_seconds: 1800
-        max_attempts: 5
+        max_attempts: 10
         retry_on: error
         command: az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --slot test
