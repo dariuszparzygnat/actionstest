@@ -31,6 +31,7 @@ jobs:
     - name: 'Create slot'
       run: |
         az webapp deployment slot create --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --slot test --configuration-source wbtest${{ github.event.inputs.buildnumber }}
+        az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -s test -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConnectionString="${{ format('Data source=wbdbcontainertestx.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={0};Password={1};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', secrets.DB_USERID, secrets.DB_PASSWORD)}}"
     - name: 'Deploy using az'
       uses: nick-fields/retry@v2
       with:
