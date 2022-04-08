@@ -39,3 +39,15 @@ jobs:
         max_attempts: 10
         retry_on: error
         command: az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --slot test
+
+    - name: Download tests
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-tests
+      with:
+        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/testing/WorkBookSmokeTests.zip?sv=${{ secrets.ACCOUNT_SAS }}'
+    - name: Test
+      run: |
+        unzip '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip'
+        cd WorkBookSmokeTests
+        dotnet build
+        dotnet test 
