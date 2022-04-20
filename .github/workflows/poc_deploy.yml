@@ -19,26 +19,26 @@ jobs:
         shell: bash
 
     steps:     
-    - name: Download a file
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-artifact
-      with:
-        file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/${{ secrets.ARTIFACTS_PATH }}/${{ github.event.inputs.buildnumber }}/WorkBookv9.zip?sv=${{ secrets.ACCOUNT_SAS }}'
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: 'Create slot'
-      run: |
-        az webapp deployment slot create --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --slot test --configuration-source wbtest${{ github.event.inputs.buildnumber }}
-        az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -s test -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConnectionString="${{ format('Data source=wbdbcontainertestx.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={0};Password={1};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', secrets.DB_USERID, secrets.DB_PASSWORD)}}"
-    - name: 'Deploy using az'
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1800
-        max_attempts: 10
-        retry_on: error
-        command: az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --slot test
+    # - name: Download a file
+    #   uses: carlosperate/download-file-action@v1.0.3
+    #   id: download-artifact
+    #   with:
+    #     file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/${{ secrets.ARTIFACTS_PATH }}/${{ github.event.inputs.buildnumber }}/WorkBookv9.zip?sv=${{ secrets.ACCOUNT_SAS }}'
+    # - name: Azure Login
+    #   uses: azure/login@v1
+    #   with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    # - name: 'Create slot'
+    #   run: |
+    #     az webapp deployment slot create --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --slot test --configuration-source wbtest${{ github.event.inputs.buildnumber }}
+    #     az webapp config connection-string set -g 'wbtest${{ github.event.inputs.buildnumber }}' -s test -t SQLAzure -n 'wbtest${{ github.event.inputs.buildnumber }}' --settings ConnectionString="${{ format('Data source=wbdbcontainertestx.westeurope.azurecontainer.io,1433;Initial Catalog=wbdatabase;Persist Security Info=False;User ID={0};Password={1};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;', secrets.DB_USERID, secrets.DB_PASSWORD)}}"
+    # - name: 'Deploy using az'
+    #   uses: nick-fields/retry@v2
+    #   with:
+    #     timeout_seconds: 1800
+    #     max_attempts: 10
+    #     retry_on: error
+    #     command: az webapp deploy --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --src-path '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookv9.zip' --type zip --slot test
 
     - name: Download tests
       uses: carlosperate/download-file-action@v1.0.3
