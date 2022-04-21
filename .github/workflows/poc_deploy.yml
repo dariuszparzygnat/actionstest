@@ -20,10 +20,10 @@ jobs:
     #   id: download-artifact
     #   with:
     #     file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/${{ secrets.ARTIFACTS_PATH }}/${{ github.event.inputs.buildnumber }}/WorkBookv9.zip?sv=${{ secrets.ACCOUNT_SAS }}'
-    # - name: Azure Login
-    #   uses: azure/login@v1
-    #   with:
-    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
     # - name: 'Create slot'
     #   run: |
     #     az webapp deployment slot create --name wbtest${{ github.event.inputs.buildnumber }} --resource-group wbtest${{ github.event.inputs.buildnumber }} --slot test --configuration-source wbtest${{ github.event.inputs.buildnumber }}
