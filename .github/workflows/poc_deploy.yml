@@ -43,7 +43,6 @@ jobs:
         file-url: 'https://${{ secrets.ACCOUNT_NAME }}.blob.core.windows.net/testing/WorkBookSmokeTests.zip?sv=${{ secrets.ACCOUNT_SAS }}'
     - name: Test
       run: |
-        timeout 120
         unzip '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WorkBookSmokeTests.zip'
         cd WorkBookSmokeTests
         dotnet build
