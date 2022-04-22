@@ -49,7 +49,7 @@ jobs:
     #     dotnet test 
     - name: Set connection string to previous
       run: |
-        az webapp config connection-string set -g wbtest${{ github.event.inputs.buildnumber }} -s test -t SQLAzure -n wbtest${{ github.event.inputs.buildnumber }} --settings ConnectionString=(az webapp config connection-string list -g wbtest${{ github.event.inputs.buildnumber }} -n wbtest${{ github.event.inputs.buildnumber }} --query [0].value)
+        az webapp config connection-string set -g wbtest${{ github.event.inputs.buildnumber }} -s test -t SQLAzure -n wbtest${{ github.event.inputs.buildnumber }} --settings ConnectionString=$(az webapp config connection-string list -g wbtest${{ github.event.inputs.buildnumber }} -n wbtest${{ github.event.inputs.buildnumber }} --query [0].value)
     # - name: Swap slots 
     #   run: |
     #     az webapp deployment slot swap -n wbtest${{ github.event.inputs.buildnumber }} -g wbtest${{ github.event.inputs.buildnumber }} --slot test --target-slot production
