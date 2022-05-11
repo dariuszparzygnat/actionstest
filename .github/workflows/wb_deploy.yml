@@ -227,4 +227,4 @@ jobs:
         retry_on: error
         command: |
           sleep 20s 
-          sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -Q "UPDATE SysVariabler SET [Vaerdi] = '${{ github.event.inputs.subscriptionkey }}' WHERE [VariableNavn] = 'WorkBookSubscriptionKey'"
+          sqlcmd -S "${{ needs.deploy_db.outputs.container_address }}" -U ${{ secrets.DB_USERID }} -P ${{ secrets.DB_PASSWORD }} -d wbdatabase -V11 -Q "UPDATE SysVariabler SET [Vaerdi] = '${{ github.event.inputs.subscriptionkey }}' WHERE [VariableNavn] = 'WorkBookSubscriptionKey'"
